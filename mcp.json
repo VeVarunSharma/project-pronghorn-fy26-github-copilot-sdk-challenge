@@ -1,0 +1,38 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "gh",
+      "args": ["mcp-server"],
+      "description": "GitHub MCP server for repository operations — used by Pronghorn to discover org structure, list repos, and manage repository settings via the GitHub API.",
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  },
+  "tools": {
+    "pronghorn_generate": {
+      "description": "Generate a complete application project from natural language requirements. Creates a new repository in the sandbox organization with generated code, branch protection, and security scanning enabled.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "appName": {
+            "type": "string",
+            "description": "Name for the application and repository (kebab-case recommended)"
+          },
+          "requirements": {
+            "type": "string",
+            "description": "Natural language description of the application requirements"
+          }
+        },
+        "required": ["appName", "requirements"]
+      }
+    },
+    "pronghorn_status": {
+      "description": "Check the status of the Pronghorn service, including sandbox org configuration and token availability.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}
