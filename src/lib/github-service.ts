@@ -156,4 +156,58 @@ export class GitHubService {
 
     return actions;
   }
+
+  async createIssues(
+    repoName: string,
+    issues: { title: string; body: string; labels: string[] }[]
+  ): Promise<{ number: number; title: string; url: string }[]> {
+    const sanitized = repoName
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, "-")
+      .replace(/-+/g, "-")
+      .slice(0, 100);
+
+    // Create labels first (ignore errors if they exist)
+    const allLabels = [...new Set(issues.flatMap((i) => i.labels))];
+    const labelColors: Record<string, string> = {
+      "feature": "0075ca",
+      "enhancement": "a2eeef",
+      "security": "e11d48",
+      "infrastructure": "7c3aed",
+      "testing": "15803d",
+      "documentation": "0969da",
+      "copilot-agent": "8b5cf6",
+      "pronghorn-generated": "f97316",
+    };
+    for (const label of allLabels) {
+      try {
+        await this.octokit.issues.createLabel({
+          owner: this.org,
+          repo: sanitized,
+          name: label,
+          color: labelColors[label] || "cccccc",
+        });
+      } catch {
+        // label already exists
+      }
+    }
+
+    const created: { number: number; title: string; url: string }[] = [];
+    for (const issue of issues) {
+      try {
+        const { data } = await this.octokit.issues.create({
+          owner: this.org,
+          repo: sanitized,
+          title: issue.title,
+          body: issue.body,
+          labels: issue.labels,
+        });
+        created.push({ number: data.number, title: data.title, url: data.html_url });
+      } catch (err) {
+        console.error(`[Pronghorn] Failed to create issue "${issue.title}":`, err);
+      }
+    }
+
+    return created;
+  }
 }

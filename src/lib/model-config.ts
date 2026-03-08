@@ -72,9 +72,7 @@ export async function getSessionOptions(opts?: {
     };
   }
 
-  if (!modelName) {
-    return { streaming };
-  }
+  const effectiveModel = modelName || "claude-opus-4.6";
 
-  return { model: modelName, streaming };
+  return { model: effectiveModel, streaming };
 }

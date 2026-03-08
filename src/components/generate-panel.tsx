@@ -30,6 +30,8 @@ interface StageEvent {
   securityActions?: string[];
   description?: string;
   error?: string;
+  issues?: { number: number; title: string; url: string }[];
+  issuesCreated?: number;
 }
 
 interface GeneratePanelProps {
@@ -251,10 +253,10 @@ export function GeneratePanel({
       {/* Success */}
       {result?.stage === "complete" && result.repoUrl && (
         <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
-          <CardContent className="pt-4 space-y-2">
+          <CardContent className="pt-4 space-y-3">
             <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
               <CheckCircle2 className="h-4 w-4" />
-              <span className="text-sm font-semibold">Project Created!</span>
+              <span className="text-sm font-semibold">Enterprise Project Scaffolded!</span>
             </div>
             <a
               href={result.repoUrl}
@@ -272,10 +274,47 @@ export function GeneratePanel({
               <Badge variant="success">
                 {result.securityActions?.length ?? 0} security policies
               </Badge>
+              {(result.issuesCreated ?? 0) > 0 && (
+                <Badge variant="success">
+                  {result.issuesCreated} issues created
+                </Badge>
+              )}
             </div>
           </CardContent>
         </Card>
       )}
+
+      {/* Created Issues */}
+      {(() => {
+        const issueStage = stages.find((s) => s.stage === "issues_created" && s.issues);
+        if (!issueStage?.issues?.length) return null;
+        return (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                📝 Issues Ready for Copilot
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1.5">
+              {issueStage.issues.map((issue) => (
+                <a
+                  key={issue.number}
+                  href={issue.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-2 text-xs hover:bg-muted/50 rounded p-1.5 -mx-1.5 transition-colors"
+                >
+                  <span className="text-muted-foreground font-mono shrink-0">#{issue.number}</span>
+                  <span className="text-primary hover:underline">{issue.title}</span>
+                </a>
+              ))}
+              <p className="text-xs text-muted-foreground pt-1 border-t mt-2">
+                💡 Assign these issues to Copilot to implement the features
+              </p>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* Error */}
       {result?.stage === "error" && (
