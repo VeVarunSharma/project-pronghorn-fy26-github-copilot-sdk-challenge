@@ -4,12 +4,31 @@
 
 **Built with the [GitHub Copilot SDK](https://github.com/github/copilot-sdk) · FY26 MCAPS Enterprise Challenge**
 
-> Pronghorn takes natural language requirements, generates production-ready code, pushes it to a sandboxed GitHub org, and locks down security — all without touching your production repos. Built for the Government of Alberta's enterprise modernization.
+> Pronghorn takes natural language requirements, generates enterprise-ready code, pushes it to a sandboxed GitHub org, and locks down security — all without touching production repos. Built for the Government of Alberta's enterprise modernization. The implementation here is the enterprise ready ready version using the GHCP SDK rather than their original implementation using a shoe string set of startupy technologies which resulted in very high maintainence costs of the apps, and lack of guardrails, security, data residency requirements, and so forth.
 
 [![Built with GitHub Copilot SDK](https://img.shields.io/badge/Built%20with-GitHub%20Copilot%20SDK-8957e5?logo=github)](https://github.com/github/copilot-sdk)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 [![Azure Container Apps](https://img.shields.io/badge/Azure-Container%20Apps-0078D4?logo=microsoft-azure)](https://azure.microsoft.com/products/container-apps)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org)
+
+🎬 **[Watch the demo video](https://microsoft-my.sharepoint.com/:v:/p/sharmave/IQAX6G22dasLT5Kl9K4vrZwnATDoaX8ZSH1XM-AzUX0aJdU?e=VV7qXF&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)** — 3-min walkthrough of Pronghorn in action
+
+---
+
+## FY26 Challenge Submission
+
+**Summary (150 words):**
+
+> Pronghorn is an AI-powered enterprise application generator built with the GitHub Copilot SDK for the Government of Alberta. The original prototype relied on a startup stack — Lovable, Supabase, Render.com, with hand-rolled agent orchestration via direct Gemini/Claude API calls — creating data sovereignty, security, and governance risks unacceptable for a public-sector organization managing 3,400+ repositories. Pronghorn replaces this with an enterprise-grade, Azure-native architecture: the GitHub Copilot SDK provides managed agent orchestration with encrypted content, a sandbox GitHub organization isolates all AI-generated code from production repos (zero blast radius), and every generated project ships with Azure Bicep IaC, GitHub Actions CI/CD, Dependabot alerts, branch protection, and automated security fixes from day one. The Copilot SDK decomposes requirements into GitHub Issues labeled for Copilot coding agent assignment, while 8 specialized Copilot agents provide domain expertise across API design, security, infrastructure, SRE, data governance, and accessibility.
+
+**Business Value:**
+
+- **Minutes** instead of days to scaffold enterprise-grade projects
+- **Zero blast radius** — sandbox org isolation from 3,400+ production repos
+- **Security from day one** — GHAS, Dependabot, branch protection, automated fixes
+- **Managed orchestration** — Copilot SDK replaces hand-rolled LLM prompt chains
+- **Azure-native** — Canadian data residency, Managed Identity, Key Vault
+- **Reusable pattern** — sandbox org architecture works for any enterprise
 
 ---
 
@@ -212,23 +231,6 @@ Not implemented yet (the app is stable as-is), but the wiring is straightforward
 - **Security** — Blast radius isolation. Dependabot + automated fixes. No secrets in generated code. Non-root Docker.
 - **Privacy** — No user data stored beyond session. Scoped tokens with minimum permissions.
 - **Limitations** — AI-generated code should always be reviewed. Complex architecture decisions need human architects.
-
----
-
-## FY26 Challenge Submission
-
-**Summary (150 words):**
-
-> Pronghorn is an AI-powered enterprise application generator built with the GitHub Copilot SDK for the Government of Alberta. The original prototype relied on a startup stack — Lovable, Supabase, Render.com, with hand-rolled agent orchestration via direct Gemini/Claude API calls — creating data sovereignty, security, and governance risks unacceptable for a public-sector organization managing 3,400+ repositories. Pronghorn replaces this with an enterprise-grade, Azure-native architecture: the GitHub Copilot SDK provides managed agent orchestration with encrypted content, a sandbox GitHub organization isolates all AI-generated code from production repos (zero blast radius), and every generated project ships with Azure Bicep IaC, GitHub Actions CI/CD, Dependabot alerts, branch protection, and automated security fixes from day one. The Copilot SDK decomposes requirements into GitHub Issues labeled for Copilot coding agent assignment, while 8 specialized Copilot agents provide domain expertise across API design, security, infrastructure, SRE, data governance, and accessibility.
-
-**Business Value:**
-
-- **Minutes** instead of days to scaffold enterprise-grade projects
-- **Zero blast radius** — sandbox org isolation from 3,400+ production repos
-- **Security from day one** — GHAS, Dependabot, branch protection, automated fixes
-- **Managed orchestration** — Copilot SDK replaces hand-rolled LLM prompt chains
-- **Azure-native** — Canadian data residency, Managed Identity, Key Vault
-- **Reusable pattern** — sandbox org architecture works for any enterprise
 
 ---
 
