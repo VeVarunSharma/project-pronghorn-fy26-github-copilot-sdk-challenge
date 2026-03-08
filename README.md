@@ -1,5 +1,8 @@
 # 🦌 Pronghorn — AI-Powered Enterprise Application Generator
 
+![fy26-goa-project-pronghorn](https://github.com/user-attachments/assets/4cd19ab7-d4df-407d-a0b6-8a34aefd0810)
+
+
 **Built with the [GitHub Copilot SDK](https://github.com/github/copilot-sdk) · FY26 MCAPS Enterprise Challenge**
 
 > Pronghorn automates greenfield application generation for enterprises. Using the GitHub Copilot SDK's agentic capabilities, it takes natural language requirements, generates production-ready code, provisions repositories in a sandboxed GitHub organization, and enforces security policies — all without touching existing production repos. Built for the Government of Alberta's enterprise modernization initiative.
