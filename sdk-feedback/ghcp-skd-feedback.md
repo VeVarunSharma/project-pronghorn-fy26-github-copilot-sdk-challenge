@@ -32,7 +32,7 @@ The fix is straightforward — export the types. The SDK clearly has them intern
 
 ---
 
-## "Encrypted content is not supported" can a silent productivity killer
+## "Encrypted content is not supported" can be a silent productivity killer
 
 This is the error you get when you use a model that isn't compatible with the SDK. The message tells you nothing — there's no indication it's a model issue, no suggestion of what to use instead, no link to anything.
 
