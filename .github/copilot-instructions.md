@@ -157,3 +157,19 @@ When generating code or recommendations:
 - All generated repos get branch protection and Dependabot alerts
 - Dockerfile runs as non-root user (`app`)
 - No user data is stored beyond the conversation session
+
+## Planned Enhancement: Microsoft Work-IQ Integration
+
+Work-IQ (`@microsoft/workiq`) is a Microsoft MCP server (Public Preview) that queries M365 Copilot data — emails, meetings, Teams messages, documents, and people. It is planned as a future integration to enrich Pronghorn's requirements gathering with organizational context.
+
+**Integration approach:**
+- Add Work-IQ as an MCP server in `mcp.json` alongside the GitHub MCP server
+- Add MSAL/Entra ID authentication (M365 sign-in) to the Next.js app
+- Query Work-IQ for contextual data (meeting transcripts, email threads, specs) before injecting into Copilot SDK prompts
+- User must have M365 Copilot license and tenant admin must consent to delegated permissions
+
+**When implementing:**
+- Use `npx -y @microsoft/workiq mcp` as the MCP server command (stdio transport)
+- Work-IQ requires delegated permissions: Sites.Read.All, Mail.Read, People.Read.All, OnlineMeetingTranscript.Read.All, Chat.Read, ChannelMessage.Read.All, ExternalItem.Read.All
+- Work-IQ is currently in Public Preview (v0.2.8) — APIs may change
+- Keep M365 data access read-only; do not store M365 data beyond the session

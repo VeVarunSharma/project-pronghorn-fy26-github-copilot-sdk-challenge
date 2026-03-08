@@ -72,6 +72,8 @@ Pronghorn solves this with a **sandboxed organization architecture** powered by 
 
 ## Architecture
 
+> 📐 Full interactive diagram available at [`docs/architecture.mmd`](docs/architecture.mmd) — open in any Mermaid-compatible viewer or the [Mermaid Live Editor](https://mermaid.live).
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        User / Developer                      │
@@ -470,6 +472,57 @@ This solution was designed in partnership with the **Government of Alberta (GovA
 | **Governance at Scale** — Enforcing security and compliance standards across thousands of repos | Automated branch protection, Dependabot, and security fixes from day one |
 | **Agentic Workflow Adoption** — Teams need purpose-built Copilot agents for their domain | 8 specialized agents covering API, Security, IaC, SRE, Data, Docs, Accessibility, and Ticketing |
 | **Data Residency** — Courts area requires source code within Canada | Azure Canada Central/East regions + upcoming GitHub data residency |
+
+---
+
+## 📧 Planned Enhancement: Microsoft Work-IQ Integration
+
+> **Status**: Planned · Work-IQ is in [Public Preview](https://github.com/microsoft/work-iq) (v0.2.8)
+
+### The Idea
+
+When a developer signs into Pronghorn with their **Microsoft 365 account** (Azure Entra ID), [Microsoft Work-IQ](https://github.com/microsoft/work-iq) can enrich the requirements chat and code generation with organizational context pulled from M365:
+
+| M365 Data Source | Enrichment |
+|-----------------|------------|
+| **📬 Emails** | Requirement threads, stakeholder decisions, approval chains |
+| **📅 Meetings** | Transcripts from architecture discussions, sprint planning |
+| **💬 Teams** | Channel discussions about project goals, technical decisions |
+| **📄 Documents** | Specs, RFPs, ADRs from SharePoint/OneDrive |
+| **👥 People** | Stakeholder identification, team structure, project owners |
+
+### How It Would Work
+
+1. Developer signs in with their M365 account via Azure Entra ID (MSAL)
+2. Work-IQ MCP server (`@microsoft/workiq`) queries their M365 Copilot data
+3. Relevant context (meeting notes, email threads, specs) is injected into the Copilot SDK prompts
+4. Requirements chat and code generation produce richer, more contextually-aware outputs
+
+**Example prompt enrichment:**
+> *"Generate an app based on the requirements we discussed in last Tuesday's Teams meeting about the permit system — include the API endpoints Sarah mentioned in her email."*
+
+### Why This Works Architecturally
+
+- **Work-IQ is an MCP server** — Pronghorn already uses MCP (`mcp.json` with GitHub MCP). Adding Work-IQ is a natural extension:
+  ```json
+  {
+    "workiq": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/workiq", "mcp"]
+    }
+  }
+  ```
+- **Same auth model** — Both use Azure Entra ID; GovAlta already has M365 Copilot licenses
+- **Delegated permissions** — Work-IQ uses delegated (user-context) permissions, so each developer only sees their own M365 data
+- **No blast radius increase** — Read-only M365 access; doesn't touch GitHub repos
+
+### Prerequisites (When Implemented)
+
+- Microsoft 365 Copilot licenses for users
+- Tenant admin consent for Work-IQ delegated permissions (Sites.Read.All, Mail.Read, Chat.Read, etc.)
+- Azure Entra ID app registration for Pronghorn (MSAL/OIDC sign-in)
+
+> 📐 See the [architecture diagram](docs/architecture.mmd) — Work-IQ is shown with dashed lines indicating the planned integration path.
 
 ---
 

@@ -1,0 +1,195 @@
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#3b82f6', 'primaryTextColor': '#f8fafc', 'primaryBorderColor': '#60a5fa', 'lineColor': '#94a3b8', 'secondaryColor': '#1e293b', 'tertiaryColor': '#0f172a', 'noteTextColor': '#f8fafc', 'noteBkgColor': '#334155', 'edgeLabelBackground': '#1e293b'}}}%%
+
+graph TB
+    %% ─── User Layer ───
+    subgraph UserLayer["👤 Developer Experience"]
+        direction LR
+        M365SignIn["🔑 M365 Sign-In<br/><i>Azure Entra ID (MSAL)</i><br/><i>OAuth 2.0 / OIDC</i>"]
+        ChatUI["💬 Requirements Chat<br/><i>Multi-turn conversation</i><br/><i>Preset GoA use cases</i>"]
+        GenUI["⚡ Generate Panel<br/><i>One-click project creation</i><br/><i>SSE progress tracking</i>"]
+    end
+
+    %% ─── Application Layer ───
+    subgraph AppLayer["🦌 Pronghorn — Next.js 16 App Router"]
+        direction TB
+
+        subgraph Frontend["React 19 Frontend"]
+            direction LR
+            ChatWindow["chat-window.tsx<br/><i>Markdown rendering</i><br/><i>Streaming messages</i>"]
+            MessageInput["message-input.tsx<br/><i>Chat input</i>"]
+            GeneratePanel["generate-panel.tsx<br/><i>7-stage progress</i><br/><i>Issue display</i>"]
+        end
+
+        subgraph APIRoutes["API Routes (Server-Side)"]
+            direction LR
+            ChatAPI["POST /api/chat<br/><i>Requirements Agent</i><br/><i>SSE streaming</i>"]
+            GenAPI["POST /api/pronghorn/generate<br/><i>7-Stage Pipeline</i><br/><i>SSE streaming</i>"]
+            StatusAPI["GET /api/pronghorn/status<br/><i>Service health</i>"]
+            HealthAPI["GET /api/health<br/><i>Liveness probe</i>"]
+        end
+
+        subgraph Libraries["Shared Libraries (src/lib)"]
+            direction LR
+            CopilotClient["copilot-client.ts<br/><i>CopilotClient singleton</i>"]
+            ModelConfig["model-config.ts<br/><i>GitHub / Azure BYOM</i><br/><i>3-path config</i>"]
+            GitHubService["github-service.ts<br/><i>Octokit wrapper</i><br/><i>Repo · Push · Security · Issues</i>"]
+        end
+    end
+
+    %% ─── M365 Context Layer (Planned — Work-IQ Integration) ───
+    subgraph WorkIQLayer["📧 Microsoft Work-IQ — M365 Context Enrichment (Planned)"]
+        direction LR
+        WorkIQMCP["Work-IQ MCP Server<br/><i>@microsoft/workiq</i><br/><i>stdio transport</i>"]
+        M365Emails["📬 Emails<br/><i>Requirements threads</i><br/><i>Stakeholder decisions</i>"]
+        M365Meetings["📅 Meetings<br/><i>Transcripts</i><br/><i>Architecture discussions</i>"]
+        M365Teams["💬 Teams Messages<br/><i>Channel discussions</i><br/><i>Project context</i>"]
+        M365Docs["📄 Documents<br/><i>Specs · RFPs · ADRs</i><br/><i>SharePoint / OneDrive</i>"]
+        M365People["👥 People<br/><i>Stakeholders</i><br/><i>Project teams</i>"]
+    end
+
+    %% ─── AI Layer ───
+    subgraph AILayer["🤖 GitHub Copilot SDK"]
+        direction LR
+        ReqAgent["Requirements Advisor<br/><i>Azure-first guidance</i><br/><i>Architecture recommendations</i>"]
+        CodeGen["Code Generator<br/><i>38+ enterprise files</i><br/><i>Structured JSON output</i>"]
+        IssuePlanner["Issue Planner<br/><i>4-8 actionable issues</i><br/><i>Acceptance criteria</i>"]
+    end
+
+    %% ─── Model Provider Layer ───
+    subgraph ModelLayer["🧠 Model Providers"]
+        direction LR
+        GitHubModels["GitHub Models<br/><i>Default path</i><br/><i>o4-mini · gpt-5 · codex</i>"]
+        AzureBYOM["Azure OpenAI (BYOM)<br/><i>DefaultAzureCredential</i><br/><i>Customer-managed endpoint</i>"]
+    end
+
+    %% ─── GitHub Layer ───
+    subgraph GitHubLayer["🐙 GitHub Platform"]
+        direction TB
+
+        subgraph SandboxOrg["🛡️ Sandbox Organization<br/><i>project-pronghorn-sandbox</i>"]
+            direction LR
+            Repo1["📦 goa-permit-api<br/>✅ Branch Protection<br/>🔒 Dependabot<br/>🎫 Copilot Issues"]
+            Repo2["📦 goa-citizen-portal<br/>✅ Branch Protection<br/>🔒 Dependabot<br/>🎫 Copilot Issues"]
+            RepoN["📦 goa-alert-service<br/>✅ Branch Protection<br/>🔒 Dependabot<br/>🎫 Copilot Issues"]
+        end
+
+        subgraph ProdOrg["🏢 Production Organization<br/><i>govalta-emu · 3,400+ repos</i>"]
+            ProdRepos["Existing Repos<br/><b>COMPLETELY ISOLATED</b><br/><i>Zero blast radius</i>"]
+        end
+    end
+
+    %% ─── Copilot Agents Layer ───
+    subgraph AgentsLayer["🤖 Copilot Agents (.github/agents/)"]
+        direction LR
+        AgentAPI["🔌 API Agent"]
+        AgentSec["🔒 Security Agent"]
+        AgentIaC["🏗️ IaC Agent"]
+        AgentSRE["📊 SRE Agent"]
+        AgentData["📊 Data Agent"]
+        AgentDocs["📝 Docs Agent"]
+        AgentA11y["♿ A11y Agent"]
+        AgentTicket["🎫 Ticketing Agent"]
+    end
+
+    %% ─── Azure Infrastructure ───
+    subgraph AzureLayer["☁️ Azure Infrastructure (Bicep IaC)"]
+        direction LR
+        ContainerApp["Azure Container Apps<br/><i>0.5 CPU · 1 GB · 1-10 replicas</i><br/><i>Canada Central</i>"]
+        ACR["Azure Container<br/>Registry<br/><i>Docker images</i>"]
+        KeyVault["Azure Key Vault<br/><i>GITHUB_TOKEN</i><br/><i>Managed Identity</i>"]
+        AppInsights["Application Insights<br/>+ Log Analytics<br/><i>Monitoring · Traces</i>"]
+    end
+
+    %% ─── CI/CD ───
+    subgraph CICD["🔄 CI/CD"]
+        direction LR
+        GHA["GitHub Actions<br/><i>azure-dev.yml</i>"]
+        AZD["Azure Developer CLI<br/><i>azd up</i>"]
+    end
+
+    %% ─── Connections: User → Frontend ───
+    M365SignIn -.->|"Entra ID token"| WorkIQMCP
+    ChatUI -->|"Send message"| ChatWindow
+    GenUI -->|"Submit requirements"| GeneratePanel
+    ChatWindow --> MessageInput
+
+    %% ─── Connections: Frontend → API ───
+    ChatWindow -->|"POST + SSE"| ChatAPI
+    GeneratePanel -->|"POST + SSE"| GenAPI
+
+    %% ─── Connections: API → Libraries ───
+    ChatAPI --> CopilotClient
+    GenAPI --> CopilotClient
+    GenAPI --> GitHubService
+    StatusAPI --> GitHubService
+    CopilotClient --> ModelConfig
+
+    %% ─── Connections: Work-IQ → M365 Data (Planned) ───
+    WorkIQMCP -.->|"Query"| M365Emails
+    WorkIQMCP -.->|"Query"| M365Meetings
+    WorkIQMCP -.->|"Query"| M365Teams
+    WorkIQMCP -.->|"Query"| M365Docs
+    WorkIQMCP -.->|"Query"| M365People
+    WorkIQMCP -.->|"Enrich prompts<br/>with M365 context"| ChatAPI
+    WorkIQMCP -.->|"Enrich requirements<br/>with meeting notes"| GenAPI
+
+    %% ─── Connections: Libraries → AI ───
+    CopilotClient -->|"Streaming session"| ReqAgent
+    CopilotClient -->|"Streaming session"| CodeGen
+    CopilotClient -->|"sendAndWait"| IssuePlanner
+
+    %% ─── Connections: AI → Models ───
+    ReqAgent --> GitHubModels
+    CodeGen --> GitHubModels
+    IssuePlanner --> GitHubModels
+    ReqAgent -.->|"BYOM"| AzureBYOM
+    CodeGen -.->|"BYOM"| AzureBYOM
+    IssuePlanner -.->|"BYOM"| AzureBYOM
+
+    %% ─── Connections: GitHubService → Sandbox ───
+    GitHubService -->|"createRepo()"| Repo1
+    GitHubService -->|"pushFiles()"| Repo2
+    GitHubService -->|"configureSecurity()<br/>createIssues()"| RepoN
+
+    %% ─── Connections: Sandbox → Production ───
+    SandboxOrg -.->|"Manual transfer<br/>when reviewed"| ProdOrg
+
+    %% ─── Connections: Agents → Sandbox ───
+    AgentAPI -.->|"Implement issues"| SandboxOrg
+    AgentSec -.->|"Security review"| SandboxOrg
+    AgentIaC -.->|"IaC scaffolding"| SandboxOrg
+    AgentTicket -.->|"Issue management"| SandboxOrg
+
+    %% ─── Connections: Azure Infra ───
+    ContainerApp -->|"Hosts"| AppLayer
+    ACR -->|"Image pull"| ContainerApp
+    KeyVault -->|"Inject secrets"| ContainerApp
+    AppInsights -->|"Telemetry"| ContainerApp
+
+    %% ─── Connections: CI/CD ───
+    GHA -->|"azd provision + deploy"| AZD
+    AZD -->|"Bicep deploy"| AzureLayer
+
+    %% ─── Styling ───
+    classDef userStyle fill:#1e40af,stroke:#3b82f6,stroke-width:2px,color:#f8fafc
+    classDef appStyle fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#f8fafc
+    classDef aiStyle fill:#4c1d95,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc
+    classDef modelStyle fill:#581c87,stroke:#a855f7,stroke-width:2px,color:#f8fafc
+    classDef githubStyle fill:#0d1117,stroke:#30363d,stroke-width:2px,color:#f8fafc
+    classDef sandboxStyle fill:#14532d,stroke:#22c55e,stroke-width:2px,color:#f8fafc
+    classDef prodStyle fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#f8fafc
+    classDef azureStyle fill:#0c4a6e,stroke:#0ea5e9,stroke-width:2px,color:#f8fafc
+    classDef cicdStyle fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#f8fafc
+    classDef agentStyle fill:#312e81,stroke:#6366f1,stroke-width:2px,color:#f8fafc
+    classDef workiqStyle fill:#7c2d12,stroke:#f97316,stroke-width:2px,color:#f8fafc,stroke-dasharray:5 5
+
+    class M365SignIn,ChatUI,GenUI userStyle
+    class ChatWindow,MessageInput,GeneratePanel,ChatAPI,GenAPI,StatusAPI,HealthAPI,CopilotClient,ModelConfig,GitHubService appStyle
+    class ReqAgent,CodeGen,IssuePlanner aiStyle
+    class GitHubModels,AzureBYOM modelStyle
+    class Repo1,Repo2,RepoN sandboxStyle
+    class ProdRepos prodStyle
+    class ContainerApp,ACR,KeyVault,AppInsights azureStyle
+    class GHA,AZD cicdStyle
+    class AgentAPI,AgentSec,AgentIaC,AgentSRE,AgentData,AgentDocs,AgentA11y,AgentTicket agentStyle
+    class WorkIQMCP,M365Emails,M365Meetings,M365Teams,M365Docs,M365People workiqStyle

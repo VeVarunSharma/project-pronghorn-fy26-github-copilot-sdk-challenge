@@ -1,0 +1,76 @@
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#3b82f6', 'primaryTextColor': '#f8fafc', 'primaryBorderColor': '#60a5fa', 'lineColor': '#94a3b8', 'secondaryColor': '#1e293b', 'tertiaryColor': '#0f172a', 'edgeLabelBackground': '#1e293b', 'fontSize': '16px'}}}%%
+
+graph LR
+    %% ─── Developer ───
+    Dev["👤 Developer or Non-technical user<br/><b>Natural Language<br/>Requirements</b>"]
+
+    %% ─── Pronghorn ───
+    subgraph Pronghorn["🦌 Pronghorn · Next.js 16 · Azure Container Apps"]
+        direction TB
+
+        Chat["💬 <b>Requirements Chat</b><br/>Azure-first architecture advice<br/>Multi-turn conversation"]
+
+        SDK["🤖 <b>GitHub Copilot SDK</b><br/>Agentic code generation<br/>Issue decomposition"]
+
+        GitSvc["🐙 <b>GitHub Service</b><br/>Repo creation · Code push<br/>Security configuration"]
+    end
+
+    %% ─── Generated Output ───
+    subgraph Sandbox["🛡️ Sandbox Organization · Blast Radius Isolation"]
+        direction TB
+
+        Repo["📦 <b>Generated Repository</b><br/>38+ enterprise files"]
+
+        subgraph GenFiles[" "]
+            direction LR
+            TS["TypeScript<br/>Express 5<br/>API Server"]
+            Bicep["Azure Bicep<br/>IaC Templates<br/>Container Apps"]
+            CICD["GitHub Actions<br/>CI/CD Pipeline<br/>Azure Deploy"]
+            Docker["Dockerfile<br/>Non-root<br/>Multi-stage"]
+        end
+
+        subgraph Security["🔒 Security · Day One"]
+            direction LR
+            BP["Branch<br/>Protection"]
+            Dep["Dependabot<br/>Alerts"]
+            Fix["Automated<br/>Security Fixes"]
+        end
+
+        subgraph Issues["🎫 GitHub Issues · Copilot Agent Ready"]
+            direction LR
+            I1["Issue #1<br/>Core Setup"]
+            I2["Issue #2<br/>API Endpoints"]
+            I3["Issue #3<br/>Azure Infra"]
+            IN["Issue #N<br/>..."]
+        end
+    end
+
+    %% ─── Production ───
+    Prod["🏢 <b>Production Org</b><br/>3,400+ repos<br/><i>Completely Isolated</i>"]
+
+    %% ─── Flow ───
+    Dev -->|"1 · Describe app"| Chat
+    Chat -->|"2 · Refine & finalize"| SDK
+    SDK -->|"3 · Generate code<br/>+ plan issues"| GitSvc
+    GitSvc -->|"4 · Create repo<br/>push files<br/>configure security"| Repo
+    Repo --- GenFiles
+    Repo --- Security
+    Repo --- Issues
+    Sandbox -.->|"5 · Transfer<br/>when reviewed"| Prod
+
+    %% ─── Styling ───
+    classDef devStyle fill:#1e40af,stroke:#3b82f6,stroke-width:3px,color:#f8fafc,font-size:14px
+    classDef pronghornStyle fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#f8fafc
+    classDef sandboxStyle fill:#14532d,stroke:#22c55e,stroke-width:2px,color:#f8fafc
+    classDef prodStyle fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#f8fafc,stroke-dasharray:5 5
+    classDef fileStyle fill:#1e293b,stroke:#64748b,stroke-width:1px,color:#f8fafc
+    classDef secStyle fill:#7f1d1d,stroke:#ef4444,stroke-width:1px,color:#f8fafc
+    classDef issueStyle fill:#312e81,stroke:#8b5cf6,stroke-width:1px,color:#f8fafc
+
+    class Dev devStyle
+    class Chat,SDK,GitSvc pronghornStyle
+    class Repo sandboxStyle
+    class Prod prodStyle
+    class TS,Bicep,CICD,Docker fileStyle
+    class BP,Dep,Fix secStyle
+    class I1,I2,I3,IN issueStyle
