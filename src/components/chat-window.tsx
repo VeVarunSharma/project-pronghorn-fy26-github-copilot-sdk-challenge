@@ -16,7 +16,39 @@ interface ChatWindowProps {
   messages: Message[];
   isStreaming: boolean;
   onGenerateClick?: (requirements: string) => void;
+  onSendPreset?: (prompt: string) => void;
 }
+
+const PRESET_PROMPTS = [
+  {
+    emoji: "📋",
+    title: "Citizen Service Request API",
+    description: "REST API for citizens to submit, track, and manage service requests to municipal departments",
+    prompt:
+      "I need a Node.js REST API for managing citizen service requests for the Government of Alberta. Citizens should be able to submit requests (e.g., road repair, park maintenance, permit applications), track status, and receive notifications. Government staff should be able to assign, prioritize, and resolve requests. Include role-based access with Azure Entra ID, Azure SQL for data, and Azure Service Bus for async notifications.",
+  },
+  {
+    emoji: "📊",
+    title: "FOIP Request Tracker",
+    description: "Freedom of Information & Privacy request management portal with compliance tracking",
+    prompt:
+      "I need a web application to manage Freedom of Information and Protection of Privacy (FOIP) requests for the Government of Alberta. It should track request intake, assignment to analysts, document collection, redaction workflow, approval chain, and response deadlines (30-day statutory requirement). Include audit logging, Azure Blob Storage for document management, role-based access via Azure Entra ID, and a dashboard showing compliance metrics and SLA adherence.",
+  },
+  {
+    emoji: "🏗️",
+    title: "Permit & Licensing Portal",
+    description: "Digital portal for businesses to apply for and manage government permits and licenses",
+    prompt:
+      "I need a full-stack application for the Government of Alberta's permit and licensing system. Businesses should be able to apply for permits online, upload supporting documents, pay fees, and track application status. Government reviewers need a workflow to review, approve/reject, and issue permits. Include Azure Cosmos DB for flexible document storage, Azure Blob Storage for file uploads, payment integration hooks, and automated email notifications via Azure Communication Services.",
+  },
+  {
+    emoji: "🔔",
+    title: "Public Alert & Notification System",
+    description: "Multi-channel emergency and public notification platform for Alberta communities",
+    prompt:
+      "I need a public alert and notification system for the Government of Alberta that can send emergency alerts and public notices via multiple channels (email, SMS, push notifications). Administrators should be able to create, target (by region/topic), schedule, and send alerts. Include subscriber management, delivery tracking, Azure Service Bus for reliable message delivery, Azure Cosmos DB for subscriber data, and a public-facing subscription portal for citizens.",
+  },
+];
 
 const READY_PATTERNS = [
   "ready to generate",
@@ -29,12 +61,22 @@ const READY_PATTERNS = [
   "shall i generate",
   "we can generate",
   "proceed to generate",
+  "generate project",
+  "generate & deploy",
+  "head to the",
+  "head over to",
+  "next steps",
+  "when you're ready",
+  "want me to help refine",
+  "recommended architecture",
+  "key features breakdown",
 ];
 
-function isReadyMessage(content: string, messageIndex: number, totalMessages: number): boolean {
-  // Don't show the button on the first assistant response — too early
-  // Require at least 3 messages (user, assistant, user, assistant = index 3+)
-  if (messageIndex < 3) return false;
+function isReadyMessage(content: string, messageIndex: number, _totalMessages: number): boolean {
+  // For preset prompts, the first assistant response (index 1) is already comprehensive
+  if (messageIndex < 1) return false;
+  // Must have meaningful content (at least 500 chars suggests a full architecture response)
+  if (content.length < 500) return false;
 
   const lower = content.toLowerCase();
   return READY_PATTERNS.some((p) => lower.includes(p));
@@ -56,7 +98,7 @@ function extractAppName(content: string): string {
   return "generated-app";
 }
 
-export function ChatWindow({ messages, isStreaming, onGenerateClick }: ChatWindowProps) {
+export function ChatWindow({ messages, isStreaming, onGenerateClick, onSendPreset }: ChatWindowProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,13 +107,34 @@ export function ChatWindow({ messages, isStreaming, onGenerateClick }: ChatWindo
 
   if (messages.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center p-8 text-muted-foreground text-sm">
-        <div className="text-center space-y-2">
-          <p className="text-2xl">🦌</p>
-          <p>Describe your application requirements to get started.</p>
-          <p className="text-xs opacity-70">
-            Try: &quot;I need a Node.js REST API for managing citizen service requests&quot;
-          </p>
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="text-center space-y-4 mb-6 pt-4">
+          <p className="text-3xl">🦌</p>
+          <div>
+            <p className="text-sm text-muted-foreground">Describe your application requirements to get started,</p>
+            <p className="text-sm text-muted-foreground">or pick a template below.</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {PRESET_PROMPTS.map((preset) => (
+            <button
+              key={preset.title}
+              onClick={() => onSendPreset?.(preset.prompt)}
+              className="group text-left border rounded-lg p-3 hover:border-primary hover:bg-primary/5 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
+            >
+              <div className="flex items-start gap-2">
+                <span className="text-lg shrink-0 mt-0.5">{preset.emoji}</span>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium group-hover:text-primary transition-colors leading-tight">
+                    {preset.title}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
+                    {preset.description}
+                  </p>
+                </div>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
     );

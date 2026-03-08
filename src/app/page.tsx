@@ -20,15 +20,30 @@ export default function Home() {
   const generatePanelRef = useRef<HTMLDivElement>(null);
 
   const handleGenerateFromChat = useCallback((fullContent: string) => {
-    // Extract a short app name from the requirements
-    const patterns = [
-      /(?:citizen|service|request|management|inventory|employee|customer)[\w\s-]*(?:api|app|service|portal|system)/i,
-    ];
+    // Extract a meaningful project name from the assistant's response
     let appName = "generated-app";
-    for (const pat of patterns) {
+    const namePatterns = [
+      // Match "Government of Alberta Permit & Licensing System" style names
+      /(?:Government of Alberta|GovAlta|Alberta)\s+([A-Z][\w&\s-]+(?:System|Portal|API|Service|Platform|App|Application|Tracker|Manager|Hub))/i,
+      // Match titles after "architecture for the" or "for the Government of Alberta"
+      /(?:architecture for|building|for)\s+(?:the\s+)?(?:Government of Alberta\s+)?([A-Z][\w&\s-]+(?:System|Portal|API|Service|Platform|App|Application|Tracker|Manager|Hub))/i,
+      // Match "# ProjectName" markdown headers
+      /^#+ (.+(?:System|Portal|API|Service|Platform|App|Application|Tracker|Manager|Hub))/im,
+      // Match "Permit & Licensing System" style standalone names
+      /([A-Z][\w&]+(?:\s+[A-Z&][\w&]+)*\s+(?:System|Portal|API|Service|Platform|App|Application|Tracker|Manager|Hub))/,
+    ];
+
+    for (const pat of namePatterns) {
       const match = fullContent.match(pat);
       if (match) {
-        appName = match[0].trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 40);
+        const raw = (match[1] || match[0]).trim();
+        // Prefix with "goa-" (Government of Alberta) for the repo name
+        appName = "goa-" + raw.toLowerCase()
+          .replace(/&/g, "and")
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "")
+          .replace(/-+/g, "-")
+          .slice(0, 50);
         break;
       }
     }
@@ -36,10 +51,7 @@ export default function Home() {
     setGenAppName(appName);
     setGenRequirements(fullContent);
 
-    // Scroll the generate panel into view
     generatePanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-
-    // Flash the panel to draw attention
     generatePanelRef.current?.classList.add("ring-2", "ring-primary", "ring-offset-2");
     setTimeout(() => {
       generatePanelRef.current?.classList.remove("ring-2", "ring-primary", "ring-offset-2");
@@ -188,6 +200,7 @@ export default function Home() {
             messages={messages}
             isStreaming={isLoading}
             onGenerateClick={handleGenerateFromChat}
+            onSendPreset={sendMessage}
           />
           <MessageInput onSend={sendMessage} disabled={isLoading} />
         </div>
