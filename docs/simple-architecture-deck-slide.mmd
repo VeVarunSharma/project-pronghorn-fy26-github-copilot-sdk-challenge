@@ -1,0 +1,24 @@
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#3b82f6', 'primaryTextColor': '#f8fafc', 'lineColor': '#94a3b8', 'edgeLabelBackground': '#1e293b', 'fontSize': '18px'}, 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 60, 'padding': 20}}}%%
+
+graph LR
+    Dev["👤 <b>Developer or Non-Technical Stakeholder</b><br/>Natural language<br/>& gather requirements (+ WorkIQ - planned)"]
+    
+    Pronghorn["🦌 <b>Pronghorn</b><br/>GitHub Copilot SDK<br/>Next.js 16"]
+    
+    Sandbox["🛡️ <b>Sandbox Org</b><br/>Generated repo<br/>+ security + compliance +issues"]
+    
+    Prod["🏢 <b>Production Org</b><br/>3,400+ repos<br/>ISOLATED"]
+
+    Dev -->|"Describe app"| Pronghorn
+    Pronghorn -->|"Generate · Push · Secure"| Sandbox
+    Sandbox -.->|"Transfer when ready"| Prod
+
+    classDef devStyle fill:#1e40af,stroke:#3b82f6,stroke-width:3px,color:#f8fafc
+    classDef coreStyle fill:#4c1d95,stroke:#8b5cf6,stroke-width:3px,color:#f8fafc
+    classDef sandboxStyle fill:#14532d,stroke:#22c55e,stroke-width:3px,color:#f8fafc
+    classDef prodStyle fill:#78350f,stroke:#f59e0b,stroke-width:3px,color:#f8fafc,stroke-dasharray:5 5
+
+    class Dev devStyle
+    class Pronghorn coreStyle
+    class Sandbox sandboxStyle
+    class Prod prodStyle

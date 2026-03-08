@@ -1,0 +1,51 @@
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#3b82f6', 'primaryTextColor': '#f8fafc', 'lineColor': '#94a3b8', 'edgeLabelBackground': '#1e293b', 'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 30, 'rankSpacing': 50}}}%%
+
+graph TB
+    Input["💡 <b>Idea / Unstructured Requirements</b>"]
+
+    Req["🎯 <b>Requirements Mode</b><br/>AI decomposes into Epics → Features<br/>→ User Stories → Acceptance Criteria<br/><i>Links to org Standards Library</i>"]
+
+    Canvas["🎨 <b>Canvas — Design Mode</b><br/>React Flow visual canvas · 24+ node types<br/>10 AI agent specialists on a shared blackboard<br/><i>Architect · DBA · Security · QA · DevOps · UX</i>"]
+
+    Audit["🔍 <b>Audit Mode</b><br/>Multi-agent cross-comparison<br/>Requirements ↔ Canvas ↔ Code<br/><i>Venn diagrams · Evidence grid · Knowledge graph</i>"]
+
+    Build["💻 <b>Build Mode — Coding Agent</b><br/>Autonomous AI file operations<br/>Stage → Commit → Push Git workflow<br/><i>Pause / Resume / Abort · Real-time monitoring</i>"]
+
+    Deploy["🚀 <b>Deploy Mode</b><br/>Push to Render.com<br/>Provision PostgreSQL · Manage schemas<br/><i>Node · Python · Go · Ruby · Rust · Elixir · Docker</i>"]
+
+    subgraph LLMs["⚠️ Direct Public LLM Calls — Hand-Rolled Orchestration"]
+        direction LR
+        Gemini["Google<br/>Gemini"]
+        Claude["Anthropic<br/>Claude"]
+    end
+
+    subgraph Infra["⚠️ Startup SaaS Stack — No Enterprise Governance"]
+        direction LR
+        Lovable["Lovable<br/><i>UI builder</i>"]
+        Supabase["Supabase<br/><i>Hosted Postgres</i>"]
+        Render["Render.com<br/><i>Hosting</i>"]
+    end
+
+    Input -->|"Natural language"| Req
+    Req -->|"Structured specs"| Canvas
+    Canvas -->|"Validated design"| Audit
+    Audit -->|"Verified artifacts"| Build
+    Build -->|"Code ready"| Deploy
+
+    Req ---|"Raw API calls"| LLMs
+    Canvas ---|"Raw API calls"| LLMs
+    Audit ---|"Raw API calls"| LLMs
+    Build ---|"Raw API calls"| LLMs
+
+    Deploy --- Infra
+    Canvas --- Lovable
+
+    classDef inputStyle fill:#1e40af,stroke:#3b82f6,stroke-width:3px,color:#f8fafc
+    classDef modeStyle fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#f8fafc
+    classDef warnStyle fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#f8fafc,stroke-dasharray:5 5
+    classDef saasStyle fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#f8fafc,stroke-dasharray:5 5
+
+    class Input inputStyle
+    class Req,Canvas,Audit,Build,Deploy modeStyle
+    class Gemini,Claude warnStyle
+    class Lovable,Supabase,Render saasStyle

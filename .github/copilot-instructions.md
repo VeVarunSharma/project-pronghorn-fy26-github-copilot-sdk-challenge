@@ -2,7 +2,9 @@
 
 ## Project Overview
 
-Pronghorn is an AI-powered enterprise application generator built with the **GitHub Copilot SDK** for the **Government of Alberta**. It takes natural language requirements, generates production-ready code, provisions repositories in a sandboxed GitHub organization, and enforces security policies automatically.
+Pronghorn is an AI-powered enterprise application generator built with the **GitHub Copilot SDK** for the **Government of Alberta**. It replaces an earlier prototype that relied on a startup-oriented stack (Lovable, Supabase, Render.com, direct Gemini/Claude API calls, hand-rolled agent orchestration) with an enterprise-grade, Azure-native architecture. It takes natural language requirements, generates production-ready code, provisions repositories in a sandboxed GitHub organization, and enforces security policies automatically.
+
+**Why the Copilot SDK matters here:** The original prototype used hand-rolled agent orchestration via raw LLM API calls to public Gemini and Claude endpoints — fragile, unauditable, and incompatible with enterprise governance. The GitHub Copilot SDK replaces this with managed agent sessions, encrypted content, structured tool use, streaming, and error handling — all governed by the GitHub Copilot license and auditable via GHEC.
 
 - **Framework**: Next.js 16 (App Router) with React 19
 - **UI**: shadcn/ui + Tailwind CSS 4

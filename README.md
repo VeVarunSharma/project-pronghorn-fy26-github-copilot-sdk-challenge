@@ -40,21 +40,57 @@
 
 Enterprise organizations managing thousands of repositories (3,400+ in GovAlta's case, with 4,000+ projected growth) face a critical challenge: **AI-driven development tools require broad repository access**, creating an unacceptable "blast radius" where a bug or misconfiguration could affect the entire source code estate.
 
-The Government of Alberta's development teams needed to:
-- Rapidly scaffold new applications following enterprise standards
-- Automate security and governance configuration from day one
-- Prevent AI tooling from accessing 3,400+ production repositories
-- Comply with Canadian data residency requirements
+**The original Pronghorn prototype** was built on a shoestring stack of startup-oriented technologies that are unsuitable for enterprise use:
+
+**Legacy Flow** *(see [`docs/legacy-customer-architecture.mmd`](docs/legacy-customer-architecture.mmd) for diagram)*:
+> 💡 Idea → 🎯 Requirements Mode (AI decomposes into Epics → Features → User Stories) → 🎨 Canvas / Design Mode (React Flow canvas, 24+ node types, 10 AI agent specialists sharing a "blackboard") → 🔍 Audit Mode (multi-agent cross-comparison with Venn diagrams, evidence grids, knowledge graphs) → 💻 Build Mode (autonomous coding agent with stage/commit/push) → 🚀 Deploy Mode (push to Render.com, provision Supabase PostgreSQL)
+
+All of this was powered by **hand-rolled agent orchestration** making direct API calls to Google Gemini and Anthropic Claude public endpoints, with the UI generated via Lovable:
+
+| Layer | Original (Startup Stack) | Enterprise Concern |
+|-------|--------------------------|-------------------|
+| **AI / LLMs** | Direct API calls to Google Gemini & Anthropic Claude public endpoints | No enterprise SLA, data leaves org boundary, no audit trail, usage not governed |
+| **Agent Orchestration** | Hand-rolled using raw LLM calls — custom prompt chaining, no framework | Fragile, no structured tool use, no standardized agent lifecycle |
+| **Frontend** | [Lovable](https://lovable.dev) (AI website builder) | No source control, no CI/CD, vendor lock-in, not auditable |
+| **Database** | [Supabase](https://supabase.com) (hosted Postgres) | Data residency outside Canada, no Azure integration, limited compliance certifications |
+| **Hosting** | [Render.com](https://render.com) | No enterprise SLA, no private networking, no integration with Azure governance |
+| **Security** | Manual, ad-hoc | No vulnerability scanning, no dependency auditing, no branch protection |
+
+This stack created critical risks for the Government of Alberta:
+- **Data sovereignty** — Sensitive requirements and generated code flowing through US-based public LLM endpoints, violating Canadian data residency requirements
+- **No audit trail** — Direct LLM calls leave no governance record; hand-rolled orchestration has no observability
+- **Vendor fragmentation** — Five different SaaS vendors, each with different security postures, compliance certs, and incident response
+- **Zero supply chain security** — No dependency scanning, no vulnerability alerts, no automated security fixes
+- **No enterprise identity** — No SSO, no Azure Entra ID integration, no RBAC
+- **Uncontrolled blast radius** — AI tools with unconstrained access to production repositories
 
 ### The Solution
 
-Pronghorn solves this with a **sandboxed organization architecture** powered by the GitHub Copilot SDK:
+Pronghorn is rebuilt from the ground up on an **enterprise-grade, Azure-native stack** powered by the **GitHub Copilot SDK**:
 
-1. **🛡️ Isolated Sandbox** — All AI-generated repositories are created in a dedicated GitHub organization, completely separated from production repos
-2. **🤖 Agentic Code Generation** — The GitHub Copilot SDK generates complete, production-ready projects from natural language requirements
-3. **🔒 Automated Governance** — Branch protection, Dependabot alerts, and automated security fixes are configured at creation time
-4. **📋 Agentic Issue Planning** — Requirements are broken into GitHub Issues labeled for Copilot coding agent assignment
-5. **🚀 Controlled Promotion** — Repositories can be transferred to the production organization through established review processes
+| Layer | Enterprise Solution | Enterprise Benefit |
+|-------|--------------------|--------------------|
+| **AI / LLMs** | GitHub Copilot SDK (`@github/copilot-sdk`) | Enterprise-managed, encrypted content, governed by GitHub Copilot license, audit logs via GHEC |
+| **Agent Orchestration** | GitHub Copilot SDK sessions + structured tool use | Production-grade agent lifecycle — streaming, sessions, idle detection, error handling built in |
+| **Frontend** | Next.js 16 + React 19 + shadcn/ui | Full source control, CI/CD, auditable, no vendor lock-in |
+| **Database / State** | Stateless (session-only) + Azure Key Vault for secrets | No persistent PII, secrets managed via Managed Identity, RBAC-secured |
+| **Hosting** | Azure Container Apps (Canada Central) | Enterprise SLA, private networking capable, Azure Monitor, Canadian data residency |
+| **Security** | GitHub Advanced Security + Dependabot + branch protection | Automated vulnerability scanning, dependency auditing, security fixes, code review enforcement |
+| **Identity** | Azure Entra ID / Managed Identity | SSO, RBAC, conditional access, federated credentials for CI/CD |
+| **IaC** | Azure Bicep + Azure Developer CLI (`azd`) | Repeatable, auditable infrastructure deployments |
+| **CI/CD** | GitHub Actions → Azure | End-to-end pipeline with OIDC auth, no stored secrets |
+| **Observability** | Azure Application Insights + Log Analytics | Distributed tracing, KQL queries, alerting, 30-day retention |
+
+**Key architectural improvements:**
+
+1. **🛡️ Isolated Sandbox** — All AI-generated repositories are created in a dedicated GitHub organization, completely separated from production repos — zero blast radius
+2. **🤖 Managed Agent Orchestration** — The GitHub Copilot SDK replaces hand-rolled LLM calls with a production-grade agent framework: structured sessions, streaming, tool use, and encrypted content — no raw API calls to public endpoints
+3. **🔒 Automated Governance** — GitHub Advanced Security, Dependabot alerts, automated security fixes, and branch protection are configured at creation time — not afterthoughts
+4. **📋 Agentic Issue Planning** — Requirements are decomposed by the Copilot SDK into GitHub Issues labeled for Copilot coding agent assignment — fully within the GitHub platform
+5. **☁️ Azure-Native Infrastructure** — Every generated app ships with Bicep IaC, Container Apps config, Key Vault integration, and App Insights — enterprise-ready from line one
+6. **🔑 Enterprise Identity** — Azure Entra ID, Managed Identity, and DefaultAzureCredential replace ad-hoc API keys and personal tokens
+7. **📊 Full Observability** — Azure Monitor, Application Insights, and Log Analytics provide the audit trail and telemetry that enterprise governance demands
+8. **🚀 Controlled Promotion** — Repositories can be transferred to the production organization through established review processes
 
 ---
 
@@ -72,7 +108,7 @@ Pronghorn solves this with a **sandboxed organization architecture** powered by 
 
 ## Architecture
 
-> 📐 Full interactive diagram available at [`docs/architecture.mmd`](docs/architecture.mmd) — open in any Mermaid-compatible viewer or the [Mermaid Live Editor](https://mermaid.live).
+> 📐 Full interactive diagram available at [`docs/full-end-to-end-architecture.mmd`](docs/full-end-to-end-architecture.mmd) — open in any Mermaid-compatible viewer or the [Mermaid Live Editor](https://mermaid.live).
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -463,15 +499,25 @@ Pronghorn supports three model configuration paths:
 
 ## Customer Context
 
-This solution was designed in partnership with the **Government of Alberta (GovAlta)**, which manages **3,400+ repositories** with an anticipated growth of 3,000–4,000 more. The engagement addressed real enterprise challenges:
+This solution was designed in partnership with the **Government of Alberta (GovAlta)**, which manages **3,400+ repositories** with an anticipated growth of 3,000–4,000 more.
 
-| Challenge | Pronghorn Solution |
-|-----------|-------------------|
-| **Blast Radius** — AI tools requiring "All Repository" access pose risk to 3,400+ production repos | Sandbox organization isolates all AI-generated code from production |
-| **Greenfield Automation** — Manual scaffolding of new applications is slow and inconsistent | One-click generation with enterprise standards baked in |
-| **Governance at Scale** — Enforcing security and compliance standards across thousands of repos | Automated branch protection, Dependabot, and security fixes from day one |
-| **Agentic Workflow Adoption** — Teams need purpose-built Copilot agents for their domain | 8 specialized agents covering API, Security, IaC, SRE, Data, Docs, Accessibility, and Ticketing |
-| **Data Residency** — Courts area requires source code within Canada | Azure Canada Central/East regions + upcoming GitHub data residency |
+### The Original Stack Problem
+
+GovAlta's initial Pronghorn prototype was built on a patchwork of startup-focused SaaS tools — **Lovable** for UI generation, **Supabase** for database, **Render.com** for hosting — with **direct API calls to Google Gemini and Anthropic Claude** for AI, and a **hand-rolled agent orchestration layer** built on raw LLM prompt chaining. While this worked for rapid prototyping, it was fundamentally incompatible with enterprise governance: data flowed through unmanaged US-based endpoints, there was no audit trail, no supply chain security, no SSO, and no integration with the Azure/GitHub ecosystem GovAlta relies on.
+
+### What Pronghorn (Enterprise) Solves
+
+| Challenge | Original Stack | Pronghorn (Enterprise) |
+|-----------|---------------|----------------------|
+| **AI Provider** | Raw Gemini/Claude API calls to public endpoints | GitHub Copilot SDK — enterprise-managed, encrypted, auditable |
+| **Agent Framework** | Hand-rolled prompt chains — fragile, unobservable | Copilot SDK sessions — structured tool use, streaming, error handling |
+| **Blast Radius** | Unrestricted AI access to production repos | Sandbox org isolates all generated code from 3,400+ production repos |
+| **Data Residency** | Data flowing through US-based SaaS (Supabase, Render, Lovable) | Azure Canada Central + GitHub data residency (upcoming) |
+| **Security** | Manual, ad-hoc, no scanning | GHAS, Dependabot, automated fixes, branch protection — all from day one |
+| **Identity** | API keys, personal tokens | Azure Entra ID, Managed Identity, DefaultAzureCredential |
+| **Infrastructure** | Render.com (no enterprise SLA, no private networking) | Azure Container Apps with Bicep IaC, Key Vault, App Insights |
+| **Observability** | None | Azure Monitor, Application Insights, Log Analytics |
+| **Agentic Workflows** | Not possible | 8 specialized Copilot agents for API, Security, IaC, SRE, Data, Docs, A11y, Ticketing |
 
 ---
 
@@ -522,7 +568,7 @@ When a developer signs into Pronghorn with their **Microsoft 365 account** (Azur
 - Tenant admin consent for Work-IQ delegated permissions (Sites.Read.All, Mail.Read, Chat.Read, etc.)
 - Azure Entra ID app registration for Pronghorn (MSAL/OIDC sign-in)
 
-> 📐 See the [architecture diagram](docs/architecture.mmd) — Work-IQ is shown with dashed lines indicating the planned integration path.
+> 📐 See the [architecture diagram](docs/full-end-to-end-architecture.mmd) — Work-IQ is shown with dashed lines indicating the planned integration path.
 
 ---
 
@@ -568,13 +614,15 @@ This project was built for the **FY26 GitHub Copilot SDK Enterprise Challenge** 
 
 **Summary (150 words):**
 
-> Pronghorn is an AI-powered enterprise application generator built with the GitHub Copilot SDK, designed for the Government of Alberta's modernization initiative. It solves the critical "blast radius" problem: enterprise AI tools requiring broad repository access create unacceptable risk for organizations managing thousands of production repositories. Pronghorn's sandbox organization architecture isolates all AI-generated code from the 3,400+ production repos, enabling safe agentic automation at enterprise scale. Through a conversational chat interface, developers articulate requirements that Pronghorn transforms into complete, production-ready projects — including TypeScript code, Azure Bicep infrastructure, CI/CD pipelines, Docker containers, and GitHub Actions workflows — all deployed to an isolated GitHub organization with branch protection, Dependabot alerts, and automated security fixes enabled from day one. The Copilot SDK then decomposes requirements into GitHub Issues labeled for Copilot coding agent assignment, creating a fully agentic development lifecycle from concept to code.
+> Pronghorn is an AI-powered enterprise application generator built with the GitHub Copilot SDK for the Government of Alberta. The original prototype relied on a startup stack — Lovable, Supabase, Render.com, with hand-rolled agent orchestration via direct Gemini/Claude API calls — creating data sovereignty, security, and governance risks unacceptable for a public-sector organization managing 3,400+ repositories. Pronghorn replaces this with an enterprise-grade, Azure-native architecture: the GitHub Copilot SDK provides managed agent orchestration with encrypted content, a sandbox GitHub organization isolates all AI-generated code from production repos (zero blast radius), and every generated project ships with Azure Bicep IaC, GitHub Actions CI/CD, Dependabot alerts, branch protection, and automated security fixes from day one. The Copilot SDK decomposes requirements into GitHub Issues labeled for Copilot coding agent assignment, while 8 specialized Copilot agents provide domain expertise across API design, security, infrastructure, SRE, data governance, and accessibility.
 
 **Business Value:**
 - 🕐 **Time-to-scaffold**: Minutes instead of days for enterprise-grade project setup
 - 🛡️ **Risk mitigation**: Zero blast radius to production repositories
-- 🔒 **Security by default**: Automated governance from repository creation
-- 🤖 **Agentic lifecycle**: Requirements → Code → Issues → Copilot agent assignments
+- 🔒 **Security by default**: GHAS, Dependabot, branch protection — automated from creation
+- 🤖 **Managed orchestration**: GitHub Copilot SDK replaces fragile hand-rolled LLM prompt chains
+- ☁️ **Azure-native**: Canadian data residency, Managed Identity, Key Vault, App Insights
+- 🏛️ **Enterprise identity**: Azure Entra ID replaces ad-hoc API keys and personal tokens
 - 📐 **Reusable pattern**: Sandbox organization architecture applicable to any enterprise
 
 ---
