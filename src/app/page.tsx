@@ -19,15 +19,22 @@ export default function Home() {
   const [triggerGenerate, setTriggerGenerate] = useState(false);
   const generatePanelRef = useRef<HTMLDivElement>(null);
 
-  const handleGenerateFromChat = useCallback((requirements: string) => {
+  const handleGenerateFromChat = useCallback((fullContent: string) => {
     // Extract a short app name from the requirements
-    const nameMatch = requirements.match(/^(?:\*\*)?([A-Z][a-zA-Z\s]+(?:API|App|Service|Portal|System))/m);
-    const appName = nameMatch
-      ? nameMatch[1].trim().toLowerCase().replace(/\s+/g, "-")
-      : "generated-app";
+    const patterns = [
+      /(?:citizen|service|request|management|inventory|employee|customer)[\w\s-]*(?:api|app|service|portal|system)/i,
+    ];
+    let appName = "generated-app";
+    for (const pat of patterns) {
+      const match = fullContent.match(pat);
+      if (match) {
+        appName = match[0].trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 40);
+        break;
+      }
+    }
 
     setGenAppName(appName);
-    setGenRequirements(requirements);
+    setGenRequirements(fullContent);
 
     // Scroll the generate panel into view
     generatePanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });

@@ -31,7 +31,7 @@ export class GitHubService {
       name: sanitized,
       description,
       auto_init: true,
-      private: true,
+      private: false,
       has_issues: true,
       has_projects: false,
       has_wiki: false,

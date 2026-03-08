@@ -20,52 +20,40 @@ interface ChatWindowProps {
 
 const READY_PATTERNS = [
   "ready to generate",
-  "head over to",
-  "generate project",
   "finalized requirements",
   "requirements summary",
   "here's your finalized",
-  "ready! 👍",
-  "ready!",
+  "here are the finalized",
+  "let's proceed",
+  "ready to proceed",
+  "shall i generate",
+  "we can generate",
+  "proceed to generate",
 ];
 
-function isReadyMessage(content: string): boolean {
+function isReadyMessage(content: string, messageIndex: number, totalMessages: number): boolean {
+  // Don't show the button on the first assistant response — too early
+  // Require at least 3 messages (user, assistant, user, assistant = index 3+)
+  if (messageIndex < 3) return false;
+
   const lower = content.toLowerCase();
   return READY_PATTERNS.some((p) => lower.includes(p));
 }
 
-function extractRequirementsSummary(content: string): string {
-  const lines = content.split("\n");
-  const summaryLines: string[] = [];
-  let inQuote = false;
-
-  for (const line of lines) {
-    if (line.startsWith('"') && !inQuote) {
-      inQuote = true;
-      summaryLines.push(line.replace(/^"/, "").replace(/"$/, ""));
-      if (line.endsWith('"')) inQuote = false;
-      continue;
-    }
-    if (inQuote) {
-      summaryLines.push(line.replace(/"$/, ""));
-      if (line.endsWith('"')) inQuote = false;
-      continue;
+function extractAppName(content: string): string {
+  // Try to find a descriptive app name from the content
+  const patterns = [
+    /(?:application|app|project|service|api)[\s:]+["']?([a-zA-Z][\w\s-]+(?:API|App|Service|Portal|System))/i,
+    /(?:citizen|service|request|management)[\w\s-]*(?:API|App|Service|Portal|System)/i,
+  ];
+  for (const pat of patterns) {
+    const match = content.match(pat);
+    if (match) {
+      const name = (match[1] || match[0]).trim();
+      return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 40);
     }
   }
-
-  if (summaryLines.length > 0) return summaryLines.join("\n").trim();
-
-  // Fallback: grab all bold/key lines as a summary
-  const keyLines = lines.filter(
-    (l) =>
-      l.match(/^\*\*/) ||
-      l.match(/^- \*\*/) ||
-      l.match(/^[A-Z][a-z]+:/) ||
-      l.match(/^#+\s/)
-  );
-  if (keyLines.length > 0) return keyLines.join("\n").trim();
-
-  return content.trim();
+  return "generated-app";
 }
 
 export function ChatWindow({ messages, isStreaming, onGenerateClick }: ChatWindowProps) {
@@ -99,7 +87,7 @@ export function ChatWindow({ messages, isStreaming, onGenerateClick }: ChatWindo
           msg.role === "assistant" &&
           !isStreaming &&
           msg.content &&
-          isReadyMessage(msg.content) &&
+          isReadyMessage(msg.content, i, messages.length) &&
           onGenerateClick;
 
         return (
@@ -132,8 +120,8 @@ export function ChatWindow({ messages, isStreaming, onGenerateClick }: ChatWindo
                   size="lg"
                   className="gap-2 bg-green-600 hover:bg-green-700 text-white shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-300"
                   onClick={() => {
-                    const summary = extractRequirementsSummary(msg.content);
-                    onGenerateClick!(summary);
+                    // Pass the full message content — the Copilot SDK understands it all
+                    onGenerateClick!(msg.content);
                   }}
                 >
                   <Rocket className="h-4 w-4" />
