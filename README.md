@@ -96,9 +96,36 @@ The generation pipeline runs 7 stages via SSE:
 
 ## Screenshots
 
-| Requirements Chat                                       | Project Generation                          | Generated Repo on GitHub                        |
-| ------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------- |
-| ![Chat](screenshots/some-requirements-move-not-all.png) | ![Generation](screenshots/generated-v1.png) | ![GitHub](screenshots/github-v1-generation.png) |
+
+#### Home View 🏠
+<img width="1159" height="893" alt="Screenshot 2026-03-08 120910" src="https://github.com/user-attachments/assets/106b9a3c-5255-40bc-af02-3601e80ba469" />
+
+#### Requirements Chat 🗨️
+<img width="1165" height="878" alt="Screenshot 2026-03-08 120945" src="https://github.com/user-attachments/assets/070085ed-cb71-4924-9dff-e69386ce685d" />
+
+#### Pre-App Generation ⌛
+<img width="1172" height="887" alt="Screenshot 2026-03-08 121005" src="https://github.com/user-attachments/assets/c1fc222a-6d01-4905-9426-42082bb2525f" />
+
+#### Landing zone App Generation In-Progress
+<img width="1181" height="878" alt="Screenshot 2026-03-08 121014" src="https://github.com/user-attachments/assets/c00dd6fe-04d9-4db9-b5db-76edbb4a0ea4" />
+
+#### Landing Zone App Generated! ✅
+<img width="1161" height="909" alt="Screenshot 2026-03-08 121244" src="https://github.com/user-attachments/assets/65ee3a9d-ac2f-43cf-a027-4ff09c33441c" />
+
+#### Generated Landing Zone App Repo on GitHub ✅
+<img width="2077" height="846" alt="Screenshot 2026-03-08 121312" src="https://github.com/user-attachments/assets/6fb5baaa-975f-4853-b17b-2e8137f13b53" />
+
+#### Generated Issues on GitHub ✅
+<img width="1278" height="593" alt="Screenshot 2026-03-08 121405" src="https://github.com/user-attachments/assets/7bbe517c-442e-4322-82c2-4184860e1b63" />
+
+#### Generated Single Issue on GitHub ✅
+<img width="1275" height="739" alt="Screenshot 2026-03-08 121329" src="https://github.com/user-attachments/assets/1c739a76-5382-4558-ad0e-57bdfcd6c244" />
+
+#### Custom Pronghorn 🐐 Agents - Assignable to issues ✅
+<img width="1299" height="753" alt="Screenshot 2026-03-08 121351" src="https://github.com/user-attachments/assets/01c2a435-bb11-4236-99b5-94c354bfdec2" />
+
+
+
 
 ---
 
